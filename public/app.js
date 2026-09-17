@@ -153,6 +153,49 @@ function renderMarquee() {
   const bloque = `<span>${frases.map((f) => `${f}<i></i>`).join('')}</span>`;
   // se duplica para que el desplazamiento sea continuo
   $('#marqueeTrack').innerHTML = bloque + bloque;
+  asegurarFranja();
+}
+
+/** La franja se mueve con una animación del CSS, pero el teléfono la pausa
+ *  en Modo de Bajo Consumo o con "Reducir movimiento". Si detectamos que no
+ *  avanza, la movemos nosotros, que eso el sistema no lo detiene. */
+function asegurarFranja() {
+  const track = $('#marqueeTrack');
+
+  // Con la página en segundo plano el navegador congela todo; se espera a
+  // que esté a la vista para saber si la animación del CSS funciona o no.
+  if (document.hidden) {
+    document.addEventListener('visibilitychange', function volver() {
+      if (document.hidden) return;
+      document.removeEventListener('visibilitychange', volver);
+      asegurarFranja();
+    });
+    return;
+  }
+
+  setTimeout(() => {
+    const anim = track.getAnimations ? track.getAnimations()[0] : null;
+    const avanzando = anim && Number(anim.currentTime) > 40;
+    if (avanzando) return;                 // la animación del CSS va bien
+
+    track.style.animation = 'none';
+    const vuelta = track.scrollWidth / 2;  // el contenido va duplicado
+    if (!vuelta) return;
+
+    let x = 0;
+    let antes = performance.now();
+    const VELOCIDAD = vuelta / 46000;      // mismo ritmo que el CSS: 46 s
+
+    const paso = (ahora) => {
+      const dt = Math.min(ahora - antes, 100);
+      antes = ahora;
+      x -= VELOCIDAD * dt;
+      if (-x >= vuelta) x += vuelta;
+      track.style.transform = `translate3d(${x.toFixed(1)}px,0,0)`;
+      requestAnimationFrame(paso);
+    };
+    requestAnimationFrame(paso);
+  }, 1500);
 }
 
 /* ── Calendario ───────────────────────────────────────────── */
