@@ -131,7 +131,25 @@ poco (unos 300 KB), y se guarda junto con la cita.
 
 ---
 
-## 5. Publicar la página en internet
+## 5. La página publicada
+
+**Ya está en internet:** https://bedrleetattoos.onrender.com
+
+- Código: https://github.com/carlows7/bedrleetattoos
+- Base de datos: proyecto `bedrleetattoos` en Neon (rama `production`)
+- Hosting: servicio `bedrleetattoos` en Render, plan gratis
+
+Para actualizarla después de cambiar algo:
+
+```bash
+git add . && git commit -m "lo que cambiaste" && git push
+```
+
+Render vuelve a publicar solo en 2-3 minutos.
+
+Lo que sigue explica cómo se montó, por si algún día hay que rehacerlo.
+
+## 5b. Cómo se publicó
 
 La página guarda las citas en dos lugares distintos según dónde corra:
 
