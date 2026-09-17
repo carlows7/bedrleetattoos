@@ -3,6 +3,12 @@
    ═══════════════════════════════════════════════════════════ */
 'use strict';
 
+/* Al refrescar, el navegador devuelve a la persona donde estaba leyendo.
+   Aquí preferimos que la página empiece siempre por la portada, salvo que
+   el enlace apunte a una sección concreta (por ejemplo .../#agenda). */
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+addEventListener('load', () => { if (!location.hash) scrollTo(0, 0); });
+
 const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const api = (path, opts) =>
