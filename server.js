@@ -206,8 +206,9 @@ async function api(req, res, url) {
     if (a.name.length < 2) return json(res, 400, { error: 'Escribe tu nombre.' });
     if (/[A-Za-zÁÉÍÓÚáéíóúÑñ]/.test(a.phone))
       return json(res, 400, { error: 'El teléfono solo puede llevar números.' });
-    if (a.phone.replace(/\D/g, '').length < 8)
-      return json(res, 400, { error: 'Escribe un teléfono válido, con al menos 8 números.' });
+    const digitos = a.phone.replace(/\D/g, '').length;
+    if (digitos < 7 || digitos > 15)
+      return json(res, 400, { error: 'Ese teléfono no parece válido: debe tener entre 7 y 15 números.' });
 
     const problem = dateIsBookable(a.date);
     if (problem) return json(res, 400, { error: problem });

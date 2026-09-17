@@ -194,7 +194,11 @@
           <input name="name" type="text" autocomplete="name" required placeholder="ej. Ana Martínez">
         </label>
         <label>WhatsApp / teléfono *
-          <input name="phone" type="tel" autocomplete="tel" required placeholder="ej. +503 1234 5678">
+          <span class="tel-campo">
+            <select id="paisTel" aria-label="País del teléfono"></select>
+            <input name="phone" type="tel" autocomplete="tel" required placeholder="1234 5678">
+          </span>
+          <small class="tel-ayuda" id="telAyuda">8 números, sin el código de país</small>
         </label>
       </div>
 

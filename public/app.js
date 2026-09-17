@@ -250,6 +250,69 @@ function updateChosen() {
   }
 }
 
+/* ── País del teléfono ────────────────────────────────────────
+   Cada país tiene su cantidad de números: en El Salvador son 8,
+   en México 10, en España 9… Se valida justo esa cantidad, y la
+   opción "Otro país" acepta cualquier número internacional. */
+const PAISES = [
+  { nombre: 'El Salvador', cod: '503', digitos: 8, ej: '7484 4432' },
+  { nombre: 'Guatemala',   cod: '502', digitos: 8, ej: '5512 3456' },
+  { nombre: 'Honduras',    cod: '504', digitos: 8, ej: '9912 3456' },
+  { nombre: 'Nicaragua',   cod: '505', digitos: 8, ej: '8812 3456' },
+  { nombre: 'Costa Rica',  cod: '506', digitos: 8, ej: '8312 3456' },
+  { nombre: 'Panamá',      cod: '507', digitos: 8, ej: '6612 3456' },
+  { nombre: 'México',      cod: '52',  digitos: 10, ej: '55 1234 5678' },
+  { nombre: 'Estados Unidos', cod: '1', digitos: 10, ej: '305 123 4567' },
+  { nombre: 'España',      cod: '34',  digitos: 9,  ej: '600 11 22 33' },
+  { nombre: 'Otro país',   cod: '',    digitos: 0,  ej: '+57 300 123 4567' },
+];
+
+function prepararTelefono() {
+  const sel = $('#paisTel');
+  const campo = $('[name=phone]');
+  const ayuda = $('#telAyuda');
+
+  sel.innerHTML = PAISES.map((p, i) =>
+    `<option value="${i}">${p.cod ? `${p.nombre} +${p.cod}` : p.nombre}</option>`).join('');
+
+  const aplicar = () => {
+    const p = PAISES[sel.value];
+    campo.placeholder = p.ej;
+    if (p.digitos) {
+      campo.maxLength = p.digitos + 6;   // deja escribir espacios
+      ayuda.textContent = `${p.digitos} números, sin el código de país`;
+    } else {
+      campo.maxLength = 22;
+      ayuda.textContent = 'Escribe el número completo con el código del país';
+    }
+    campo.value = '';
+    msg('');
+  };
+  sel.addEventListener('change', aplicar);
+  aplicar();
+}
+
+/** Revisa que el número tenga la cantidad de dígitos de su país.
+ *  Devuelve el número listo para guardar, o un aviso si está mal. */
+function revisarTelefono() {
+  const p = PAISES[$('#paisTel').value];
+  const digitos = $('[name=phone]').value.replace(/\D/g, '');
+  if (!digitos) return { error: 'Escribe tu número de teléfono.' };
+
+  if (p.digitos) {
+    if (digitos.length !== p.digitos) {
+      return { error: `En ${p.nombre} el número es de ${p.digitos} números; ` +
+        `escribiste ${digitos.length}.` };
+    }
+    return { telefono: `+${p.cod} ${digitos}` };
+  }
+  // Otro país: se acepta cualquier número internacional razonable
+  if (digitos.length < 7 || digitos.length > 15) {
+    return { error: 'Ese número no parece válido: escribe entre 7 y 15 números, con el código del país.' };
+  }
+  return { telefono: `+${digitos}` };
+}
+
 /* ── El teléfono solo admite números ──────────────────────────
    Se limpian las letras mientras se escribe, y se deja pasar
    "+", espacios, guiones y paréntesis, que sí se usan al escribir
@@ -257,15 +320,28 @@ function updateChosen() {
 const soloNumeros = (input) => {
   input.setAttribute('inputmode', 'tel');
   input.addEventListener('input', () => {
-    const limpio = input.value.replace(/[^\d+()\s-]/g, '');
+    let limpio = input.value.replace(/[^\d+()\s-]/g, '');
+
+    // Si el país tiene una cantidad fija de números, no deja escribir de más
+    const p = PAISES[$('#paisTel')?.value ?? 0];
+    if (p && p.digitos) {
+      let vistos = 0;
+      limpio = [...limpio].filter((c) => {
+        if (!/\d/.test(c)) return true;
+        vistos += 1;
+        return vistos <= p.digitos;
+      }).join('');
+    }
+
     if (limpio !== input.value) {
-      const pos = input.selectionStart - (input.value.length - limpio.length);
+      const pos = Math.max(0, input.selectionStart - (input.value.length - limpio.length));
       input.value = limpio;
       input.setSelectionRange(pos, pos);
     }
   });
 };
 soloNumeros($('[name=phone]'));
+prepararTelefono();
 
 /* ── Foto de referencia (se comprime antes de subirla) ────── */
 $('#photo').addEventListener('change', async (e) => {
@@ -329,10 +405,12 @@ $('#bookingForm').addEventListener('submit', async (e) => {
     return;
   }
   if ((f.get('name') || '').trim().length < 2) { msg('Escribe tu nombre completo.', 'err'); return; }
-  if ((f.get('phone') || '').replace(/\D/g, '').length < 8) { msg('Escribe un teléfono válido con lada.', 'err'); return; }
+
+  const tel = revisarTelefono();
+  if (tel.error) { msg(tel.error, 'err'); $('[name=phone]').focus(); return; }
 
   const payload = {
-    name: f.get('name'), phone: f.get('phone'),
+    name: f.get('name'), phone: tel.telefono,
     date: state.date, time: state.time,
     style: f.get('style'), bodyPart: f.get('bodyPart'),
     sizeCm: f.get('sizeCm'), notes: f.get('notes'),
@@ -427,6 +505,7 @@ function olvidarFolio(code) {
  *  Se usa al confirmar una cita, para que no queden datos de la anterior. */
 function limpiarFormulario() {
   $('#bookingForm').reset();
+  $('#paisTel').dispatchEvent(new Event('change'));
   state.time = null;
   state.photo = null;
   $('#photo').value = '';
