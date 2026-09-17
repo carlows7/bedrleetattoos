@@ -508,7 +508,8 @@ input::placeholder,textarea::placeholder{color:var(--ink-dim)}
   /* En el teléfono la portada se ordena en tres bloques: imagen arriba,
      texto debajo y los datos al final. Así la foto no se estira ni queda
      recortada a medias, y su borde inferior se desvanece hacia el fondo. */
-  .hero{min-height:0;display:block;padding:0;overflow:visible}
+  .hero{min-height:0;display:block;padding:0;overflow:visible;
+    background:linear-gradient(180deg,#0a0a0c 0%,#0a0a0c 30%,#080f1d 58%,var(--bg) 100%)}
   /* La foto entra completa, a todo el ancho y con su proporción real:
      así no se recorta ni se estira, y se ve nítida. */
   /* La foto se ve tal cual, entera y sin nada encima. Solo su borde de

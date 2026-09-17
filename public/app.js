@@ -7,7 +7,12 @@
    Aquí preferimos que la página empiece siempre por la portada, salvo que
    el enlace apunte a una sección concreta (por ejemplo .../#agenda). */
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-addEventListener('load', () => { if (!location.hash) scrollTo(0, 0); });
+addEventListener('load', () => {
+  // Si quedó un #agenda en la dirección (de haber tocado un botón antes),
+  // se quita para que al refrescar no vuelva a bajar hasta ahí.
+  if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+  scrollTo(0, 0);
+});
 
 const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
