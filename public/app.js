@@ -236,6 +236,23 @@ function updateChosen() {
   }
 }
 
+/* ── El teléfono solo admite números ──────────────────────────
+   Se limpian las letras mientras se escribe, y se deja pasar
+   "+", espacios, guiones y paréntesis, que sí se usan al escribir
+   un número (+503 7484 4432). */
+const soloNumeros = (input) => {
+  input.setAttribute('inputmode', 'tel');
+  input.addEventListener('input', () => {
+    const limpio = input.value.replace(/[^\d+()\s-]/g, '');
+    if (limpio !== input.value) {
+      const pos = input.selectionStart - (input.value.length - limpio.length);
+      input.value = limpio;
+      input.setSelectionRange(pos, pos);
+    }
+  });
+};
+soloNumeros($('[name=phone]'));
+
 /* ── Foto de referencia (se comprime antes de subirla) ────── */
 $('#photo').addEventListener('change', async (e) => {
   const file = e.target.files[0];
@@ -449,18 +466,38 @@ function pantallaSinCitas(aviso) {
         ¿Agendaste desde otro teléfono o computadora? Escribe el folio que te dimos:
       </p>
       <form id="folioForm" class="lookup-form">
-        <input name="code" placeholder="Folio (ej. 4F9A2C)" maxlength="12" aria-label="Folio de la cita">
+        <input name="code" placeholder="Folio (ej. 4F9A2C)" maxlength="8" aria-label="Folio de la cita"
+               autocapitalize="characters" autocomplete="off" spellcheck="false">
         <button class="btn btn-outline" type="submit"><span>Buscar</span></button>
       </form>
+      <p class="form-msg err" id="folioMsg" role="status" aria-live="polite"></p>
     </div>
     <div class="modal-actions">
       <button class="btn btn-primary btn-block" type="button" data-close><span>Entendido</span></button>
     </div>`);
 
+  const campoFolio = $('#folioForm input');
+  campoFolio.addEventListener('input', () => {
+    // el folio son 6 letras y números, nada más
+    const limpio = campoFolio.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+    if (limpio !== campoFolio.value) campoFolio.value = limpio;
+    $('#folioMsg').textContent = '';
+  });
+
   $('#folioForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const code = new FormData(e.currentTarget).get('code').trim().toUpperCase();
-    if (!code) return;
+    if (!code) {
+      $('#folioMsg').textContent = 'Escribe tu folio para buscar la cita.';
+      campoFolio.focus();
+      return;
+    }
+    if (code.length < 4) {
+      $('#folioMsg').textContent = 'Ese folio está incompleto: son 6 letras y números.';
+      campoFolio.focus();
+      return;
+    }
+    $('#folioMsg').textContent = 'Buscando…';
     try {
       const a = await api('/api/appointments?code=' + encodeURIComponent(code));
       if (a.status === 'cancelada') return pantallaSinCitas('Esa cita ya estaba cancelada.');
