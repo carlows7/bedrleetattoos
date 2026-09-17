@@ -44,7 +44,16 @@ const json = (res, status, data) =>
 
 // ── Utilidades de horario ──────────────────────────────────────
 const pad = (n) => String(n).padStart(2, '0');
-const todayISO = () => new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD local
+
+// Fecha y hora según el reloj del estudio, no el del servidor
+const fmtFecha = new Intl.DateTimeFormat('en-CA', {
+  timeZone: config.timezone, year: 'numeric', month: '2-digit', day: '2-digit',
+});
+const fmtHora = new Intl.DateTimeFormat('en-GB', {
+  timeZone: config.timezone, hour: '2-digit', minute: '2-digit', hour12: false,
+});
+const todayISO = () => fmtFecha.format(new Date());   // YYYY-MM-DD
+const nowHM = () => fmtHora.format(new Date());       // HH:MM
 
 /** Todos los bloques de un día según la configuración. */
 function slotsForDate(dateStr) {
@@ -59,12 +68,13 @@ function slotsForDate(dateStr) {
   return out;
 }
 
-/** Un bloque que ya pasó (hoy, hora anterior) no se puede reservar. */
+/** Un bloque que ya pasó (hoy, hora anterior) no se puede reservar.
+ *  Se compara con la hora del estudio, no con la del servidor. */
 function isPast(dateStr, time) {
-  const now = new Date();
-  const [y, m, d] = dateStr.split('-').map(Number);
-  const [hh, mm] = time.split(':').map(Number);
-  return new Date(y, m - 1, d, hh, mm) <= now;
+  const hoy = todayISO();
+  if (dateStr < hoy) return true;
+  if (dateStr > hoy) return false;
+  return time <= nowHM();
 }
 
 function dateIsBookable(dateStr) {
@@ -73,7 +83,7 @@ function dateIsBookable(dateStr) {
   if (dateStr < today) return 'Esa fecha ya pasó.';
   const limit = new Date();
   limit.setDate(limit.getDate() + config.schedule.maxDaysAhead);
-  if (dateStr > limit.toLocaleDateString('en-CA'))
+  if (dateStr > fmtFecha.format(limit))
     return `Solo se puede agendar con ${config.schedule.maxDaysAhead} días de anticipación.`;
   if (slotsForDate(dateStr).length === 0) return 'Ese día el estudio está cerrado.';
   return null;
@@ -185,7 +195,6 @@ async function api(req, res, url) {
     const a = {
       name: clean(body.name, 80),
       phone: clean(body.phone, 30),
-      email: clean(body.email, 120),
       date: clean(body.date, 10),
       time: clean(body.time, 5),
       style: clean(body.style, 40),
@@ -197,8 +206,6 @@ async function api(req, res, url) {
     if (a.name.length < 2) return json(res, 400, { error: 'Escribe tu nombre.' });
     if (a.phone.replace(/\D/g, '').length < 8)
       return json(res, 400, { error: 'Escribe un teléfono válido con lada.' });
-    if (a.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(a.email))
-      return json(res, 400, { error: 'El correo no parece válido.' });
 
     const problem = dateIsBookable(a.date);
     if (problem) return json(res, 400, { error: problem });

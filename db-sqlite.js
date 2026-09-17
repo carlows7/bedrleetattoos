@@ -68,7 +68,7 @@ export const takenInRange = async (from, to) => {
 
 export const createAppointment = async (a) => {
   try {
-    st.insert.run(a.name, a.phone, a.email, a.date, a.time,
+    st.insert.run(a.name, a.phone, a.email || '', a.date, a.time,
       a.style, a.bodyPart, a.sizeCm, a.notes, a.photo, a.code);
   } catch (err) {
     if (String(err?.message || '').includes('UNIQUE constraint failed')) {

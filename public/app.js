@@ -300,7 +300,7 @@ $('#bookingForm').addEventListener('submit', async (e) => {
   if ((f.get('phone') || '').replace(/\D/g, '').length < 8) { msg('Escribe un teléfono válido con lada.', 'err'); return; }
 
   const payload = {
-    name: f.get('name'), phone: f.get('phone'), email: f.get('email'),
+    name: f.get('name'), phone: f.get('phone'),
     date: state.date, time: state.time,
     style: f.get('style'), bodyPart: f.get('bodyPart'),
     sizeCm: f.get('sizeCm'), notes: f.get('notes'),

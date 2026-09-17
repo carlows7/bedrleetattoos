@@ -502,12 +502,23 @@ input::placeholder,textarea::placeholder{color:var(--ink-dim)}
   .nav-links a:hover{background:rgba(47,123,255,.15)}
   .nav-links a::after{display:none}
 
-  .hero-media{background-size:contain;background-position:center 14%}
-  .circle-cta,.scroll-hint{display:none}
-  .hero{padding:96px 20px 250px}
-  .hero-inner{gap:18px}
+  /* En el teléfono la portada se ordena en tres bloques: imagen arriba,
+     texto debajo y los datos al final. Así la foto no se estira ni queda
+     recortada a medias, y su borde inferior se desvanece hacia el fondo. */
+  .hero{min-height:0;display:block;padding:0;overflow:visible}
+  /* La foto entra completa, a todo el ancho y con su proporción real:
+     así no se recorta ni se estira, y se ve nítida. */
+  .hero-media{position:relative;inset:auto;z-index:0;height:auto;aspect-ratio:736/414;
+    background-size:100% auto;background-position:center top;
+    -webkit-mask-image:linear-gradient(180deg,#000 62%,rgba(0,0,0,.55) 84%,transparent 100%);
+    mask-image:linear-gradient(180deg,#000 62%,rgba(0,0,0,.55) 84%,transparent 100%)}
+  .hero-shade{top:0;bottom:auto;height:auto;aspect-ratio:736/414;
+    background:linear-gradient(180deg,rgba(3,10,24,.55) 0%,rgba(3,10,24,.08) 40%,rgba(6,14,29,.85) 100%)}
+  .hero-inner{position:relative;z-index:1;gap:16px;padding:0 20px 34px;margin-top:-34px}
+  .hero-facts{position:static;margin-top:6px}
   .hero-facts li{padding:15px 20px}
   .hero-facts svg{width:19px;height:19px}
+  .circle-cta,.scroll-hint{display:none}
 
   .section{padding:56px 18px}
   .section-head{margin-bottom:30px}

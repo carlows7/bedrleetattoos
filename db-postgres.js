@@ -65,7 +65,7 @@ export const createAppointment = async (a) => {
       `INSERT INTO appointments
          (name, phone, email, date, time, style, body_part, size_cm, notes, photo, code)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
-      [a.name, a.phone, a.email, a.date, a.time,
+      [a.name, a.phone, a.email || '', a.date, a.time,
        a.style, a.bodyPart, a.sizeCm, a.notes, a.photo, a.code]);
   } catch (err) {
     // 23505 = otra persona acaba de apartar ese horario

@@ -43,6 +43,10 @@ export const config = {
   styles: ['Fine line', 'Blackwork', 'Geométrico', 'Tradicional', 'Realismo'],
 
   // Horario real que usa el sistema de citas
+  // Zona horaria del estudio. El servidor de internet trabaja en horario de
+  // Londres, así que sin esto creería que ya es mañana desde las 18:00.
+  timezone: 'America/El_Salvador',
+
   schedule: {
     openHour: 11,
     closeHour: 20,

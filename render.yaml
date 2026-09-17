@@ -11,6 +11,8 @@ services:
     envVars:
       - key: NODE_VERSION
         value: 22.11.0
+      - key: TZ
+        value: America/El_Salvador
       # La dirección de la base de datos (Neon) se pega en el panel de Render,
       # NO se escribe aquí: es una clave privada.
       - key: DATABASE_URL
