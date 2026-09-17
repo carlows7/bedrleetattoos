@@ -320,7 +320,8 @@ const msg = (text, kind = '') => {
 
 $('#bookingForm').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const f = new FormData(e.currentTarget);
+  const formulario = e.currentTarget;      // guardado: tras un await se pierde
+  const f = new FormData(formulario);
 
   if (!state.date || !state.time) {
     msg('Primero elige un día y un horario en el calendario.', 'err');
@@ -350,10 +351,7 @@ $('#bookingForm').addEventListener('submit', async (e) => {
       body: JSON.stringify(payload),
     });
     exito(res);
-    e.currentTarget.reset();
-    $('#removePhoto').click();
-    state.time = null;
-    updateChosen();
+    limpiarFormulario();
     loadSlots(state.date);
     renderMonth();
   } catch (err) {
@@ -425,12 +423,28 @@ function olvidarFolio(code) {
   catch { /* nada que hacer */ }
 }
 
+/** Deja el formulario en blanco: datos, foto, horario elegido y avisos.
+ *  Se usa al confirmar una cita, para que no queden datos de la anterior. */
+function limpiarFormulario() {
+  $('#bookingForm').reset();
+  state.time = null;
+  state.photo = null;
+  $('#photo').value = '';
+  $('#preview').hidden = true;
+  $('#previewImg').removeAttribute('src');
+  $('#fileBox').style.display = '';
+  updateChosen();
+  msg('');
+}
+
 /* ── Modal de confirmación ────────────────────────────────── */
 function exito(res) {
   const a = res.appointment;
   guardarFolio(res.code);
   abrirModal(`
-    <div class="ok-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+    <button class="ok-badge ok-badge-btn" type="button" data-close aria-label="Cerrar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+    </button>
     <h3>¡Tu horario quedó apartado!</h3>
     <p class="muted">Nadie más puede reservar ese bloque. Te esperamos en el estudio.</p>
     <div class="code-box">
@@ -466,6 +480,7 @@ function abrirModal(html) {
 function cerrarModal() {
   $('#modal').hidden = true;
   document.body.style.overflow = '';
+  msg('');   // limpia el aviso rojo del formulario, si quedó alguno
 }
 $('#modalClose').addEventListener('click', cerrarModal);
 $('#modalClose').addEventListener('touchend', (e) => { e.preventDefault(); cerrarModal(); });
@@ -614,7 +629,9 @@ function msgModal(texto) {
 
 function pantallaDespedida() {
   abrirModal(`
-    <div class="ok-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 1 0-7.1 7.1l8.8 8.8 8.8-8.8a5 5 0 0 0 0-7.1Z"/></svg></div>
+    <button class="ok-badge ok-badge-btn" type="button" data-close aria-label="Cerrar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 1 0-7.1 7.1l8.8 8.8 8.8-8.8a5 5 0 0 0 0-7.1Z"/></svg>
+    </button>
     <h3>¡Espero que vuelvas pronto!</h3>
     <p class="muted">Muchas gracias. Tu cita quedó cancelada y el horario ya está libre
       para alguien más. Cuando quieras, puedes agendar de nuevo.</p>
