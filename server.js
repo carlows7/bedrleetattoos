@@ -14,6 +14,20 @@ import {
 const root = dirname(fileURLToPath(import.meta.url));
 const PUBLIC = join(root, 'public');
 
+/** Busca la imagen de portada: la que diga config.heroImage, o el primer
+ *  archivo llamado "portada" que encuentre en public/img/. Así basta con
+ *  guardar la foto ahí para que la página la use. */
+async function buscarPortada() {
+  if (config.heroImage) return config.heroImage;
+  for (const nombre of ['portada.jpg', 'portada.jpeg', 'portada.png', 'portada.webp']) {
+    try {
+      await stat(join(PUBLIC, 'img', nombre));
+      return 'img/' + nombre;
+    } catch { /* seguimos buscando */ }
+  }
+  return 'img/hero.svg';   // el relleno mientras no haya foto
+}
+
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8',
@@ -115,7 +129,8 @@ async function api(req, res, url) {
   const path = url.pathname;
 
   if (req.method === 'GET' && path === '/api/config') {
-    const { schedule, studioName, tagline, intro, heroImage, whatsappNumber, phoneDisplay,
+    const heroImage = await buscarPortada();
+    const { schedule, studioName, tagline, intro, whatsappNumber, phoneDisplay,
       address, city, mapsQuery, instagram, facebook, facebookUrl, hoursText, styles } = config;
     return json(res, 200, {
       studioName, tagline, intro, heroImage, whatsappNumber, phoneDisplay, address, city,

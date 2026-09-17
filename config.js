@@ -7,13 +7,12 @@ export const config = {
   studioName: 'bedrlee_tattoos',
 
   // 🖼️ IMAGEN DE PORTADA
-  // Pon tu foto en public/img/ y escribe aquí su nombre.
-  // Ejemplo: 'img/portada.jpg'. Ideal: horizontal, mínimo 1600 px de ancho.
-  heroImage: 'img/hero.svg',
+  // Deja esto vacío y simplemente guarda tu foto en public/img/ con el nombre
+  // portada.jpg (o .png / .webp): el servidor la detecta solo.
+  // Si prefieres otro nombre, escríbelo aquí, por ejemplo: 'img/mi-foto.jpg'.
+  heroImage: '',
   tagline: 'Tatuajes personalizados · Fine line, blackwork y geométrico',
-  intro:
-    'Cada pieza se diseña desde cero contigo. Agenda tu sesión, ' +
-    'envía tu referencia y recibe una cotización sin compromiso.',
+  intro: 'Agenda tu sesión, envía tu referencia y recibe una cotización sin compromiso',
 
   // WhatsApp en formato internacional, solo dígitos, sin el "+".
   // 503 = El Salvador.
@@ -35,7 +34,7 @@ export const config = {
   // Facebook: el nombre que se muestra en la página
   facebook: 'Bedr Lee',
   // Dirección del perfil. Si se deja vacía, el botón abre la búsqueda por nombre.
-  facebookUrl: 'https://www.facebook.com/bedrlee.tattoos',
+  facebookUrl: 'https://www.facebook.com/bedr.lee.2025',
 
   // Texto del horario que se muestra en la sección de contacto
   hoursText: 'Lunes a sábado · 11:00 a 20:00 h',

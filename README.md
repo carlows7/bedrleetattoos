@@ -49,21 +49,22 @@ npm run citas
 | Dirección | `address`, `city` | Ya puesta: Bedrlee Estudio · San Isidro, Izalco, Sonsonate |
 | Punto del mapa | `mapsQuery` | Ya puesto: `13.78875,-89.5632778` (las coordenadas que diste) |
 | Instagram | `instagram` | Ya puesto: `bedrlee_tattoos` (solo el usuario, sin `@`) |
-| Facebook | `facebook`, `facebookUrl` | Ya puesto: se muestra `Bedr Lee` y abre `facebook.com/bedrlee.tattoos` |
+| Facebook | `facebook`, `facebookUrl` | Ya puesto: se muestra `Bedr Lee` y abre `facebook.com/bedr.lee.2025` |
 | Horario de atención | `hoursText` | Texto que se muestra |
 | Horario real de citas | `schedule` | Hora de apertura, cierre, duración del bloque y días cerrados |
-| **Imagen de portada** | `heroImage` | Ver abajo |
+| **Imagen de portada** | (ninguna) | Basta guardar la foto como `public/img/portada.jpg`. Ver abajo |
 
 Después de cambiar `config.js`, reinicia el servidor (Ctrl+C y `npm start`).
 
 ### Cambiar la imagen de portada
 
-1. Copia tu foto a la carpeta `public/img/` (por ejemplo `portada.jpg`).
-2. En `config.js` escribe: `heroImage: 'img/portada.jpg'`.
+Guarda tu foto en `public/img/` con el nombre **`portada.jpg`** (también vale
+`.png` o `.webp`) y recarga: la página la detecta sola, no hay que tocar código.
+Si prefieres otro nombre, escríbelo en `heroImage` dentro de `config.js`.
 
 Recomendado: horizontal, mínimo 1600 px de ancho, y que la parte importante
-esté hacia la derecha (el texto va del lado izquierdo). La que está ahora
-(`img/hero.svg`) es un relleno temporal.
+esté hacia la derecha, porque el nombre del estudio va del lado izquierdo.
+Mientras no haya foto se usa el relleno `img/hero.svg`.
 
 ### Los estilos que ofreces
 
@@ -156,7 +157,7 @@ ningún repositorio.
 ### Paso 2 · Subir el código a GitHub
 
 1. Crea una cuenta en **github.com** si no tienes.
-2. Crea un repositorio nuevo, vacío, llamado `bedrlee-tattoos`.
+2. Crea un repositorio nuevo, vacío, llamado `bedrleetattoos`.
 3. En la terminal, dentro de esta carpeta:
 
 ```bash
@@ -166,7 +167,7 @@ git add . && git commit -m "Página del estudio" && git branch -M main
 4. Conecta y sube (cambia `TU-USUARIO`):
 
 ```bash
-git remote add origin https://github.com/TU-USUARIO/bedrlee-tattoos.git && git push -u origin main
+git remote add origin https://github.com/TU-USUARIO/bedrleetattoos.git && git push -u origin main
 ```
 
 GitHub te pedirá usuario y una contraseña que en realidad es un *token*: se saca
@@ -177,7 +178,7 @@ La carpeta `data/` no se sube nunca: ahí están las citas y las fotos de prueba
 ### Paso 3 · Publicar en Render
 
 1. Entra a **render.com**, crea cuenta y conecta tu GitHub.
-2. **New → Web Service** y elige el repositorio `bedrlee-tattoos`.
+2. **New → Web Service** y elige el repositorio `bedrleetattoos`.
 3. Render lee el archivo `render.yaml` que ya está en el proyecto, así que la
    configuración sale sola (plan *Free*, arranque `node server.js`).
 4. Antes de crear el servicio, abre **Environment** y añade la variable:
@@ -188,9 +189,23 @@ La carpeta `data/` no se sube nunca: ahí están las citas y las fotos de prueba
 
 5. Dale a **Create Web Service** y espera un par de minutos.
 
-Al terminar tendrás un enlace fijo tipo **https://bedrlee-tattoos.onrender.com**,
-que funciona igual en la computadora, en el celular y para cualquier cliente,
-esté donde esté. Ese es el enlace que puedes poner en tu Instagram.
+Al terminar tendrás este enlace, fijo y con https:
+
+**https://bedrleetattoos.onrender.com**
+
+Funciona igual en la computadora, en el celular y para cualquier cliente, esté
+donde esté, y **sí se puede tocar directamente en WhatsApp o Instagram** (las
+direcciones con números y puerto, como `http://192.168.1.213:3000`, WhatsApp no
+las convierte en enlace: hay que copiarlas a mano).
+
+El nombre de la dirección sale del campo `name` en `render.yaml`. Si lo quieres
+distinto, cámbialo ahí antes de publicar.
+
+### ¿Y un dominio propio?
+
+Si más adelante quieres **https://bedrleetattoos.com** (sin el `.onrender.com`),
+se compra el dominio (unos $10-15 al año en Namecheap o Cloudflare) y se conecta
+desde Render en Settings → Custom Domain. La página no cambia en nada.
 
 ### Dos cosas que debes saber del plan gratis
 
@@ -237,7 +252,7 @@ extras/        ← el catálogo que se quitó, guardado por si vuelve
 - [x] Dirección: **Bedrlee Estudio · San Isidro, Izalco, Sonsonate**, con el mapa
       apuntando a las coordenadas 13°47'19.5"N 89°33'47.8"W.
 - [x] Correo: eliminado de la página.
-- [ ] **Imagen de portada** → cópiala a `public/img/` y ponla en `heroImage`.
-- [x] Facebook: **facebook.com/bedrlee.tattoos** (se muestra como "Bedr Lee")
+- [ ] **Imagen de portada** → guárdala como `public/img/portada.jpg`.
+- [x] Facebook: **facebook.com/bedr.lee.2025** (se muestra como "Bedr Lee")
 - [ ] (Opcional) Fotos reales de tus trabajos, si algún día quieres volver a
       tener un catálogo en la página.

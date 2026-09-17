@@ -1,11 +1,17 @@
-# Configuración para publicar en Render (render.com)
+# Configuración para publicar en Render (render.com).
+# El nombre de aquí abajo es el que sale en la dirección:
+#   name: bedrleetattoos  →  https://bedrleetattoos.onrender.com
 services:
   - type: web
-    name: bedrlee-tattoos
+    name: bedrleetattoos
     runtime: node
     plan: free
-    buildCommand: ''          # no hay dependencias que instalar
+    buildCommand: npm install --omit=dev
     startCommand: node server.js
     envVars:
       - key: NODE_VERSION
         value: 22.11.0
+      # La dirección de la base de datos (Neon) se pega en el panel de Render,
+      # NO se escribe aquí: es una clave privada.
+      - key: DATABASE_URL
+        sync: false
