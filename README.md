@@ -56,6 +56,12 @@ npm run citas
 
 Después de cambiar `config.js`, reinicia el servidor (Ctrl+C y `npm start`).
 
+### Crédito de la imagen de portada
+
+La foto actual (`public/img/portada.jpg`) es de **Unsplash**, con licencia de
+uso libre, también comercial y sin pedir permiso:
+https://unsplash.com/photos/daf1bfd26baa
+
 ### Cambiar la imagen de portada
 
 Guarda tu foto en `public/img/` con el nombre **`portada.jpg`** (también vale

@@ -388,11 +388,11 @@ function comprimir(file, maxLado = 1400, calidad = 0.82) {
 }
 
 /* ── Envío del formulario ─────────────────────────────────── */
-const msg = (text, kind = '') => {
+function msg(text, kind = '') {
   const el = $('#formMsg');
   el.textContent = text;
   el.className = 'form-msg ' + kind;
-};
+}
 
 $('#bookingForm').addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -550,7 +550,10 @@ function exito(res) {
     </div>`);
 }
 
-const escapar = (s) => String(s).replace(/[<>&"]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
+function escapar(s) {
+  return String(s).replace(/[<>&"]/g, (c) =>
+    ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
+}
 
 function abrirModal(html) {
   $('#modalBody').innerHTML = html;
