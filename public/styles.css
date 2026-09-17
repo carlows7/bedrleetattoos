@@ -511,12 +511,15 @@ input::placeholder,textarea::placeholder{color:var(--ink-dim)}
      así no se recorta ni se estira, y se ve nítida. */
   /* La foto se ve tal cual, entera y sin nada encima. Solo su borde de
      abajo se apaga poco a poco para que no quede una línea de corte. */
+  /* La foto entera arriba; el nombre y "tattoo studio" caen sobre su parte
+     baja, con un velo que los hace legibles sin tapar la escultura. */
   .hero-media{position:relative;inset:auto;z-index:0;height:auto;aspect-ratio:736/414;
     background-color:#0a0a0c;background-size:100% auto;background-position:center top;
-    -webkit-mask-image:linear-gradient(180deg,#000 72%,rgba(0,0,0,.85) 86%,transparent 100%);
-    mask-image:linear-gradient(180deg,#000 72%,rgba(0,0,0,.85) 86%,transparent 100%)}
-  .hero-shade{display:none}
-  .hero-inner{position:relative;z-index:1;gap:16px;padding:14px 20px 34px;margin-top:0}
+    -webkit-mask-image:linear-gradient(180deg,#000 86%,rgba(0,0,0,.8) 95%,transparent 100%);
+    mask-image:linear-gradient(180deg,#000 86%,rgba(0,0,0,.8) 95%,transparent 100%)}
+  .hero-shade{top:0;bottom:auto;height:auto;aspect-ratio:736/414;z-index:0;
+    background:linear-gradient(180deg,transparent 40%,rgba(5,10,20,.35) 62%,rgba(6,14,29,.85) 100%)}
+  .hero-inner{position:relative;z-index:1;gap:16px;padding:0 20px 34px;margin-top:-104px}
   .hero-facts{position:static;margin-top:6px}
   .hero-facts li{padding:15px 20px}
   .hero-facts svg{width:19px;height:19px}
