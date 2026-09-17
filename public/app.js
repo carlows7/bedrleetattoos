@@ -446,7 +446,8 @@ function exito(res) {
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
     </button>
     <h3>¡Tu horario quedó apartado!</h3>
-    <p class="muted">Nadie más puede reservar ese bloque. Te esperamos en el estudio.</p>
+    <p class="muted">Nadie más puede reservar ese bloque. Tu cita <b>ya quedó guardada</b>:
+      puedes cerrar esta ventana tranquilo, no se cancela.</p>
     <div class="code-box">
       <b>${res.code}</b>
       <small>Guarda este folio para consultar o cancelar tu cita</small>
