@@ -215,9 +215,10 @@ body.scrolled .topbar{transform:translateY(-100%)}
 /* ── Portada ──────────────────────────────────────────────── */
 .hero{position:relative;min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;
   padding:130px clamp(20px,6vw,72px) 250px;color:#fff;overflow:hidden;isolation:isolate}
-.hero-media{position:absolute;inset:0;z-index:-2;background:#050a14 center/contain no-repeat;
-  background-image:url('img/hero.svg');animation:heroIn 3.8s var(--ease) forwards}
-@keyframes heroIn{from{transform:scale(1.10);opacity:.25}to{transform:scale(1);opacity:1}}
+.hero-media{position:absolute;inset:0;z-index:-2;
+  background:#050a14 center 32%/cover no-repeat;
+  background-image:url('img/hero.svg');animation:heroIn 3.4s var(--ease) forwards}
+@keyframes heroIn{from{transform:scale(1.05);opacity:.3}to{transform:scale(1);opacity:1}}
 .hero-shade{position:absolute;inset:0;z-index:-1;background:
   linear-gradient(105deg,rgba(3,10,24,.92) 0%,rgba(4,16,38,.7) 45%,rgba(6,30,70,.5) 100%),
   linear-gradient(0deg,rgba(3,10,24,.96) 0%,transparent 44%),
