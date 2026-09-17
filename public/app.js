@@ -468,6 +468,7 @@ function cerrarModal() {
   document.body.style.overflow = '';
 }
 $('#modalClose').addEventListener('click', cerrarModal);
+$('#modalClose').addEventListener('touchend', (e) => { e.preventDefault(); cerrarModal(); });
 $('#modal').addEventListener('click', (e) => {
   if (e.target === $('#modal') || e.target.closest('[data-close]')) cerrarModal();
 });
