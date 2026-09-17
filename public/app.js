@@ -134,6 +134,9 @@ async function init() {
   const q = encodeURIComponent(CFG.mapsQuery);
   $('#mapFrame').src = `https://www.google.com/maps?q=${q}&hl=es&z=16&output=embed`;
   $('#routeBtn').href = `https://www.google.com/maps/dir/?api=1&destination=${q}`;
+  // Tanto el botón del mapa como la tarjeta del estudio abren el selector
+  $('#routeBtn').addEventListener('click', menuComoLlegar);
+  $('#mapLink').addEventListener('click', menuComoLlegar);
 
   renderMarquee();
   CFG.styles.forEach((s) => $('#styleSelect').add(new Option(s, s)));
@@ -369,6 +372,36 @@ $('#bookingForm').addEventListener('submit', async (e) => {
     btn.querySelector('span').textContent = 'Confirmar cita';
   }
 });
+
+/* ── Cómo llegar: Google Maps, Waze o Mapas de iPhone ────────
+   Se ofrecen las tres porque cada quien usa la suya, y las apps
+   se abren solas si están instaladas en el teléfono. */
+function menuComoLlegar(e) {
+  if (e) e.preventDefault();
+  const destino = encodeURIComponent(CFG.mapsQuery);
+  const apps = [
+    { nombre: 'Google Maps', icono: 'G',
+      url: `https://www.google.com/maps/dir/?api=1&destination=${destino}` },
+    { nombre: 'Waze', icono: 'W',
+      url: `https://waze.com/ul?ll=${destino}&navigate=yes` },
+    { nombre: 'Mapas de iPhone', icono: 'M',
+      url: `https://maps.apple.com/?daddr=${destino}&dirflg=d` },
+  ];
+  abrirModal(`
+    <div class="ok-badge ok-badge-soft">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+    </div>
+    <h3>Cómo llegar</h3>
+    <p class="muted">${escapar(CFG.address)} · ${escapar(CFG.city)}</p>
+    <p class="mini" style="text-align:left;margin:14px 0 4px">Elige con qué app quieres la ruta:</p>
+    <div class="modal-actions">
+      ${apps.map((a) => `
+        <a class="btn btn-outline btn-block ruta-app" href="${a.url}" target="_blank" rel="noopener" data-close>
+          <b class="ruta-icono">${a.icono}</b><span>${a.nombre}</span>
+        </a>`).join('')}
+      <button class="btn btn-primary btn-block" type="button" data-close><span>Cerrar</span></button>
+    </div>`);
+}
 
 /* ── Citas guardadas en este navegador ───────────────────────
    Se guarda el folio al agendar para que después baste un botón
