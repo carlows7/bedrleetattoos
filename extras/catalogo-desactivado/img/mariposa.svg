@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 750" width="600" height="750">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#0d3b7a"/><stop offset="1" stop-color="#05172f"/>
+  </linearGradient>
+  <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="7"/>
+    <feColorMatrix type="saturate" values="0"/></filter>
+  <radialGradient id="vig" cx="0.5" cy="0.45" r="0.75">
+    <stop offset="0.45" stop-color="#03101f" stop-opacity="0"/><stop offset="1" stop-color="#03101f" stop-opacity="0.6"/>
+  </radialGradient>
+</defs>
+<rect width="600" height="750" fill="url(#bg)"/>
+<rect width="600" height="750" filter="url(#grain)" opacity="0.06"/>
+<g fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M300 365 C170 185 60 255 125 369 C150 405 260 399 300 365Z" stroke-width="2.6"/>
+<path d="M300 381 C190 435 149 555 226 571 C274 577 294 495 300 381Z" stroke-width="2.6"/>
+<circle cx="208" cy="301" r="6.72" stroke-width="1.3" opacity="0.75"/>
+<circle cx="199" cy="307" r="12.18" stroke-width="1.3" opacity="0.63"/>
+<circle cx="190" cy="313" r="17.64" stroke-width="1.3" opacity="0.51"/>
+<circle cx="181" cy="319" r="23.099999999999998" stroke-width="1.3" opacity="0.39"/>
+<path d="M270 415 q-50 50 -44 130" stroke-width="1.2" opacity="0.55"/>
+<path d="M280 341 q-80 -20 -130 10" stroke-width="1.2" opacity="0.55"/>
+<path d="M294 271 q-26 -52 -54 -70" stroke-width="2"/>
+<circle cx="238" cy="197" r="5" fill="#ffffff" stroke="none"/>
+<path d="M300 365 C430 185 540 255 475 369 C450 405 340 399 300 365Z" stroke-width="2.6"/>
+<path d="M300 381 C410 435 451 555 374 571 C326 577 306 495 300 381Z" stroke-width="2.6"/>
+<circle cx="392" cy="301" r="6.72" stroke-width="1.3" opacity="0.75"/>
+<circle cx="401" cy="307" r="12.18" stroke-width="1.3" opacity="0.63"/>
+<circle cx="410" cy="313" r="17.64" stroke-width="1.3" opacity="0.51"/>
+<circle cx="419" cy="319" r="23.099999999999998" stroke-width="1.3" opacity="0.39"/>
+<path d="M330 415 q50 50 44 130" stroke-width="1.2" opacity="0.55"/>
+<path d="M320 341 q80 -20 130 10" stroke-width="1.2" opacity="0.55"/>
+<path d="M306 271 q26 -52 54 -70" stroke-width="2"/>
+<circle cx="362" cy="197" r="5" fill="#ffffff" stroke="none"/>
+<path d="M300 267 L300 525" stroke-width="5" opacity="0.95"/>
+</g>
+<rect width="600" height="750" fill="url(#vig)"/>
+</svg>

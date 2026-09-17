@@ -1,0 +1,6 @@
+# Las citas y las fotos de los clientes no se suben a ningún repositorio
+data/
+
+node_modules/
+.DS_Store
+*.log

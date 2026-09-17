@@ -1,0 +1,18 @@
+{
+  "name": "bedrlee-tattoos",
+  "version": "1.0.0",
+  "description": "Página del estudio bedrlee_tattoos: portada, agenda de citas con horarios únicos y cotización por WhatsApp.",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=22.5"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "citas": "node admin.js"
+  },
+  "dependencies": {
+    "pg": "^8.23.0"
+  }
+}

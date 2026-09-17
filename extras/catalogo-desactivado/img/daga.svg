@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 750" width="600" height="750">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#0d3b7a"/><stop offset="1" stop-color="#05172f"/>
+  </linearGradient>
+  <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="8"/>
+    <feColorMatrix type="saturate" values="0"/></filter>
+  <radialGradient id="vig" cx="0.5" cy="0.45" r="0.75">
+    <stop offset="0.45" stop-color="#03101f" stop-opacity="0"/><stop offset="1" stop-color="#03101f" stop-opacity="0.6"/>
+  </radialGradient>
+</defs>
+<rect width="600" height="750" fill="url(#bg)"/>
+<rect width="600" height="750" filter="url(#grain)" opacity="0.06"/>
+<g fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M300 120 L334 250 L334 470 L266 470 L266 250Z" stroke-width="2.6"/>
+<path d="M300 132 L300 470" stroke-width="1.2" opacity="0.5"/>
+<path d="M180 478 L420 478 L404 506 L196 506Z" stroke-width="2.4"/>
+<circle cx="220" cy="492" r="6" stroke-width="1.6" opacity="0.8"/>
+<circle cx="260" cy="492" r="6" stroke-width="1.6" opacity="0.8"/>
+<circle cx="300" cy="492" r="6" stroke-width="1.6" opacity="0.8"/>
+<circle cx="340" cy="492" r="6" stroke-width="1.6" opacity="0.8"/>
+<circle cx="380" cy="492" r="6" stroke-width="1.6" opacity="0.8"/>
+<path d="M278 506 L278 632 L322 632 L322 506Z" stroke-width="2.4"/>
+<path d="M278 520.0 L322 528.0" stroke-width="1.2" opacity="0.6"/>
+<path d="M278 539.0 L322 547.0" stroke-width="1.2" opacity="0.6"/>
+<path d="M278 558.0 L322 566.0" stroke-width="1.2" opacity="0.6"/>
+<path d="M278 577.0 L322 585.0" stroke-width="1.2" opacity="0.6"/>
+<path d="M278 596.0 L322 604.0" stroke-width="1.2" opacity="0.6"/>
+<path d="M278 615.0 L322 623.0" stroke-width="1.2" opacity="0.6"/>
+<circle cx="300" cy="654" r="24" stroke-width="2.4"/>
+<circle cx="300" cy="654" r="9" fill="#ffffff" stroke="none"/>
+<path d="M260 300 q-120 60 -92 180 q20 -96 92 -130" stroke-width="1.6" opacity="0.65"/>
+<path d="M340 300 q120 60 92 180 q-20 -96 -92 -130" stroke-width="1.6" opacity="0.65"/>
+</g>
+<rect width="600" height="750" fill="url(#vig)"/>
+</svg>

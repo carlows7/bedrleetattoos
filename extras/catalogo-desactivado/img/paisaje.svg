@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 750" width="600" height="750">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#0d3b7a"/><stop offset="1" stop-color="#05172f"/>
+  </linearGradient>
+  <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="5"/>
+    <feColorMatrix type="saturate" values="0"/></filter>
+  <radialGradient id="vig" cx="0.5" cy="0.45" r="0.75">
+    <stop offset="0.45" stop-color="#03101f" stop-opacity="0"/><stop offset="1" stop-color="#03101f" stop-opacity="0.6"/>
+  </radialGradient>
+</defs>
+<rect width="600" height="750" fill="url(#bg)"/>
+<rect width="600" height="750" filter="url(#grain)" opacity="0.06"/>
+<g fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="300" cy="375" r="215" stroke-width="3"/>
+<circle cx="300" cy="375" r="228" stroke-width="1" opacity="0.4"/>
+<clipPath id="c"><circle cx="300" cy="375" r="213"/></clipPath>
+<g clip-path="url(#c)"><circle cx="358" cy="279" r="46" stroke-width="2"/><path d="M70 435 L180 305 L260 405 L340 265 L450 415 L530 355 L530 605 L70 605Z" stroke-width="2.4" fill="#0a2f60"/><path d="M340 265 L306 327 L326 335 L296 369" stroke-width="1.4" opacity="0.6"/><path d="M90 483 q 100 -14 210 0 q 100 14 210 0" stroke-width="1.2" opacity="0.5"/><path d="M90 500 q 100 14 210 0 q 100 -14 210 0" stroke-width="1.2" opacity="0.45"/><path d="M90 517 q 100 -14 210 0 q 100 14 210 0" stroke-width="1.2" opacity="0.4"/><path d="M90 534 q 100 14 210 0 q 100 -14 210 0" stroke-width="1.2" opacity="0.35"/><path d="M90 551 q 100 -14 210 0 q 100 14 210 0" stroke-width="1.2" opacity="0.3"/><path d="M90 568 q 100 14 210 0 q 100 -14 210 0" stroke-width="1.2" opacity="0.25"/><path d="M90 585 q 100 -14 210 0 q 100 14 210 0" stroke-width="1.2" opacity="0.19999999999999996"/><path d="M150 505 L150 441 M150 447 l-16 16 M150 465 l16 16 M150 481 l-14 14" stroke-width="1.6" opacity="0.75"/><path d="M226 479 L226 415 M226 421 l-16 16 M226 439 l16 16 M226 455 l-14 14" stroke-width="1.6" opacity="0.75"/><path d="M302 505 L302 441 M302 447 l-16 16 M302 465 l16 16 M302 481 l-14 14" stroke-width="1.6" opacity="0.75"/><path d="M378 479 L378 415 M378 421 l-16 16 M378 439 l16 16 M378 455 l-14 14" stroke-width="1.6" opacity="0.75"/><path d="M454 505 L454 441 M454 447 l-16 16 M454 465 l16 16 M454 481 l-14 14" stroke-width="1.6" opacity="0.75"/></g>
+</g>
+<rect width="600" height="750" fill="url(#vig)"/>
+</svg>

@@ -1,0 +1,11 @@
+# Configuración para publicar en Render (render.com)
+services:
+  - type: web
+    name: bedrlee-tattoos
+    runtime: node
+    plan: free
+    buildCommand: ''          # no hay dependencias que instalar
+    startCommand: node server.js
+    envVars:
+      - key: NODE_VERSION
+        value: 22.11.0
