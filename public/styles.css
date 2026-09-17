@@ -509,13 +509,14 @@ input::placeholder,textarea::placeholder{color:var(--ink-dim)}
   .hero{min-height:0;display:block;padding:0;overflow:visible}
   /* La foto entra completa, a todo el ancho y con su proporción real:
      así no se recorta ni se estira, y se ve nítida. */
+  /* La foto se ve tal cual, entera y sin nada encima. Solo su borde de
+     abajo se apaga poco a poco para que no quede una línea de corte. */
   .hero-media{position:relative;inset:auto;z-index:0;height:auto;aspect-ratio:736/414;
-    background-size:100% auto;background-position:center top;
-    -webkit-mask-image:linear-gradient(180deg,#000 62%,rgba(0,0,0,.55) 84%,transparent 100%);
-    mask-image:linear-gradient(180deg,#000 62%,rgba(0,0,0,.55) 84%,transparent 100%)}
-  .hero-shade{top:0;bottom:auto;height:auto;aspect-ratio:736/414;
-    background:linear-gradient(180deg,rgba(3,10,24,.55) 0%,rgba(3,10,24,.08) 40%,rgba(6,14,29,.85) 100%)}
-  .hero-inner{position:relative;z-index:1;gap:16px;padding:0 20px 34px;margin-top:-34px}
+    background-color:#0a0a0c;background-size:100% auto;background-position:center top;
+    -webkit-mask-image:linear-gradient(180deg,#000 72%,rgba(0,0,0,.85) 86%,transparent 100%);
+    mask-image:linear-gradient(180deg,#000 72%,rgba(0,0,0,.85) 86%,transparent 100%)}
+  .hero-shade{display:none}
+  .hero-inner{position:relative;z-index:1;gap:16px;padding:14px 20px 34px;margin-top:0}
   .hero-facts{position:static;margin-top:6px}
   .hero-facts li{padding:15px 20px}
   .hero-facts svg{width:19px;height:19px}
