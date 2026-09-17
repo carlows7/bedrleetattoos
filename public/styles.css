@@ -269,7 +269,9 @@ body.scrolled .topbar{transform:translateY(-100%)}
 .marquee{overflow:hidden;background:linear-gradient(90deg,#0a1e3e,#102a52 50%,#0a1e3e);
   border-block:1px solid var(--line);padding:16px 0}
 .marquee-track{display:flex;gap:0;width:max-content;animation:slide 46s linear infinite}
-.marquee:hover .marquee-track{animation-play-state:paused}
+@media (hover:hover) and (pointer:fine){
+  .marquee:hover .marquee-track{animation-play-state:paused}
+}
 @keyframes slide{to{transform:translateX(-50%)}}
 .marquee span{display:inline-flex;align-items:center;gap:26px;padding-right:26px;
   font-size:.82rem;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:var(--blue-200);white-space:nowrap}
@@ -593,4 +595,5 @@ input::placeholder,textarea::placeholder{color:var(--ink-dim)}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
   .reveal{opacity:1;transform:none}
+  .marquee-track{animation:slide 60s linear infinite!important;animation-duration:60s!important}
 }
