@@ -203,6 +203,20 @@ function bloqueado(ip) {
   return r.fallos >= TOPE ? Math.ceil((ESPERA - (Date.now() - r.desde)) / 60000) : 0;
 }
 
+/* Mismo freno para quien pruebe folios al azar buscando citas ajenas */
+const folioFallos = new Map();
+function frenoFolio(ip) {
+  const r = folioFallos.get(ip);
+  if (!r) return 0;
+  if (Date.now() - r.desde > ESPERA) { folioFallos.delete(ip); return 0; }
+  return r.fallos >= 15 ? Math.ceil((ESPERA - (Date.now() - r.desde)) / 60000) : 0;
+}
+function apuntarFolioFallido(ip) {
+  const r = folioFallos.get(ip);
+  if (!r || Date.now() - r.desde > ESPERA) folioFallos.set(ip, { fallos: 1, desde: Date.now() });
+  else r.fallos += 1;
+}
+
 function apuntarFallo(ip) {
   const r = intentos.get(ip);
   if (!r || Date.now() - r.desde > ESPERA) intentos.set(ip, { fallos: 1, desde: Date.now() });
@@ -329,12 +343,27 @@ async function api(req, res, url) {
     });
   }
 
-  // Consultar una cita por folio
+  /* Consultar una cita por folio.
+     Se devuelve solo lo justo para reconocerla y cancelarla: ni teléfono,
+     ni la idea que escribió, ni su foto. Así, aunque alguien acertara un
+     folio ajeno, no se lleva los datos personales de esa persona. */
   if (req.method === 'GET' && path === '/api/appointments') {
+    const ip = quienEs(req);
+    const minutos = frenoFolio(ip);
+    if (minutos) {
+      return json(res, 429, { error: `Demasiados intentos. Espera ${minutos} minuto(s).` });
+    }
+
     const code = clean(url.searchParams.get('code'), 12).toUpperCase();
     const row = code && await findByCode(code);
-    if (!row) return json(res, 404, { error: 'No encontramos ninguna cita con ese folio.' });
-    return json(res, 200, { ...row, photoUrl: row.photo ? `/uploads/${row.photo}` : null });
+    if (!row) {
+      apuntarFolioFallido(ip);
+      return json(res, 404, { error: 'No encontramos ninguna cita con ese folio.' });
+    }
+    return json(res, 200, {
+      code: row.code, name: row.name, date: row.date, time: row.time,
+      style: row.style, status: row.status,
+    });
   }
 
   // Cancelar (libera el horario para otras personas)
