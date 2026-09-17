@@ -42,7 +42,45 @@ await pool.query(`
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
   )`);
 
+await pool.query(`
+  CREATE TABLE IF NOT EXISTS settings (
+    clave TEXT PRIMARY KEY,
+    valor TEXT NOT NULL
+  )`);
+await pool.query(`
+  CREATE TABLE IF NOT EXISTS closed_days (
+    date   TEXT PRIMARY KEY,
+    motivo TEXT
+  )`);
+
 export const motor = 'postgres (en la nube)';
+
+export const leerAjuste = async (clave) => {
+  const { rows } = await pool.query(`SELECT valor FROM settings WHERE clave = $1`, [clave]);
+  return rows[0]?.valor ?? null;
+};
+
+export const guardarAjuste = async (clave, valor) => {
+  await pool.query(
+    `INSERT INTO settings (clave, valor) VALUES ($1,$2)
+     ON CONFLICT (clave) DO UPDATE SET valor = EXCLUDED.valor`, [clave, valor]);
+};
+
+export const diasCerrados = async () => {
+  const { rows } = await pool.query(`SELECT date, motivo FROM closed_days ORDER BY date`);
+  return rows;
+};
+
+export const cerrarDia = async (date, motivo) => {
+  await pool.query(
+    `INSERT INTO closed_days (date, motivo) VALUES ($1,$2)
+     ON CONFLICT (date) DO UPDATE SET motivo = EXCLUDED.motivo`, [date, motivo || '']);
+};
+
+export const abrirDia = async (date) => {
+  const { rowCount } = await pool.query(`DELETE FROM closed_days WHERE date = $1`, [date]);
+  return rowCount > 0;
+};
 
 export const takenTimes = async (date) => {
   const { rows } = await pool.query(

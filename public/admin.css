@@ -1,0 +1,65 @@
+/* Panel del estudio · se apoya en los estilos de la página */
+
+.admin{padding:0}
+.login{min-height:100svh;display:grid;place-items:center;padding:24px}
+.login-card{width:min(420px,100%);display:grid;gap:14px}
+.login-card h1{font-size:1.6rem;color:#fff}
+.login-card label{display:grid;gap:6px;font-size:.84rem;font-weight:700;color:var(--ink-soft)}
+
+.panel{max-width:1100px;margin:0 auto;padding:clamp(20px,4vw,42px);display:grid;gap:22px}
+.panel-head{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;
+  padding-bottom:6px}
+.panel-head h1{font-size:clamp(1.5rem,4vw,2.1rem);color:#fff}
+.panel-acciones{display:flex;gap:10px;flex-wrap:wrap}
+.panel .card{display:grid;gap:14px}
+.panel .card h2{font-size:1.25rem;color:#fff}
+
+/* Citas */
+.citas-lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.cita{padding:16px 18px;border-radius:var(--r);border:1px solid var(--line-soft);
+  background:rgba(122,170,255,.06);display:grid;gap:6px;align-content:start}
+.cita-cab{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+  padding-bottom:8px;border-bottom:1px dashed var(--line)}
+.cita-cab b{font-family:'Playfair Display',serif;font-style:italic;font-size:1.05rem;color:#fff}
+.cita-cab b::first-letter{text-transform:uppercase}
+.cita-hora{font-weight:800;color:var(--blue-300)}
+.cita-nombre{font-weight:700;color:#fff}
+.cita-tel{font-size:.92rem;color:var(--blue-300);font-weight:600}
+.cita-tel:hover{text-decoration:underline}
+.cita-datos{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.cita-datos span{font-size:.75rem;padding:3px 9px;border-radius:8px;
+  background:rgba(47,123,255,.15);color:var(--blue-200);font-weight:600}
+.cita-datos .folio{background:rgba(255,255,255,.1);color:var(--ink-soft);letter-spacing:.08em}
+.cita-nota{font-size:.88rem;color:var(--ink-soft)}
+.cita-foto{display:block;margin-top:6px;border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+.cita-foto img{width:100%;height:120px;object-fit:cover}
+
+/* Horario */
+.dias{border:1px solid var(--line-soft);border-radius:var(--r);padding:14px 16px;margin:4px 0 14px}
+.dias legend{padding:0 8px;font-size:.84rem;font-weight:700;color:var(--ink-soft)}
+.dias-lista{display:flex;flex-wrap:wrap;gap:8px}
+.dia-check{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;
+  border:1.5px solid var(--line-soft);background:rgba(122,170,255,.06);cursor:pointer;
+  font-size:.86rem;font-weight:600;transition:all .25s var(--ease)}
+.dia-check:hover{border-color:var(--blue-500)}
+.dia-check input{width:16px;height:16px;accent-color:var(--blue-600);margin:0;padding:0}
+.dia-check:has(input:checked){background:var(--blue-700);border-color:var(--blue-600);color:#fff}
+
+/* Días cerrados */
+.cerrar-form{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end}
+.cerrar-form label{display:grid;gap:6px;font-size:.84rem;font-weight:700;color:var(--ink-soft);margin:0}
+.cerrados{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.cerrados li{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:12px 16px;border-radius:12px;border:1px solid var(--line-soft);
+  background:rgba(122,170,255,.06)}
+.cerrados b{color:#fff;font-weight:700}
+.cerrados b::first-letter{text-transform:uppercase}
+.cerrados small{display:block;color:var(--ink-dim);font-size:.82rem}
+
+.panel .form-msg{text-align:left;margin-top:4px}
+
+@media (max-width:760px){
+  .cerrar-form{grid-template-columns:1fr}
+  .panel-head{flex-direction:column;align-items:stretch}
+  .citas-lista{grid-template-columns:1fr}
+}

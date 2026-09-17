@@ -42,6 +42,18 @@ db.exec(`
     mime   TEXT NOT NULL,
     bytes  BLOB NOT NULL
   );
+
+  -- Ajustes que el tatuador puede cambiar desde el panel
+  CREATE TABLE IF NOT EXISTS settings (
+    clave TEXT PRIMARY KEY,
+    valor TEXT NOT NULL
+  );
+
+  -- Días sueltos en los que el estudio no abre (vacaciones, feriados…)
+  CREATE TABLE IF NOT EXISTS closed_days (
+    date   TEXT PRIMARY KEY,
+    motivo TEXT
+  );
 `);
 
 const st = {
@@ -54,6 +66,15 @@ const st = {
   cancel: db.prepare(`UPDATE appointments SET status = 'cancelada' WHERE code = ? AND status <> 'cancelada'`),
   next: db.prepare(`SELECT * FROM appointments WHERE status <> 'cancelada' AND date >= ? ORDER BY date, time`),
   putPhoto: db.prepare(`INSERT INTO photos (id, mime, bytes) VALUES (?, ?, ?)`),
+  leerAjuste: db.prepare(`SELECT valor FROM settings WHERE clave = ?`),
+  guardarAjuste: db.prepare(
+    `INSERT INTO settings (clave, valor) VALUES (?, ?)
+     ON CONFLICT(clave) DO UPDATE SET valor = excluded.valor`),
+  diasCerrados: db.prepare(`SELECT date, motivo FROM closed_days ORDER BY date`),
+  cerrarDia: db.prepare(
+    `INSERT INTO closed_days (date, motivo) VALUES (?, ?)
+     ON CONFLICT(date) DO UPDATE SET motivo = excluded.motivo`),
+  abrirDia: db.prepare(`DELETE FROM closed_days WHERE date = ?`),
   getPhoto: db.prepare(`SELECT mime, bytes FROM photos WHERE id = ?`),
 };
 
@@ -82,6 +103,12 @@ export const findByCode = async (code) => st.byCode.get(code);
 export const cancelByCode = async (code) => st.cancel.run(code).changes > 0;
 export const upcoming = async (fromDate) => st.next.all(fromDate);
 export const putPhoto = async (id, mime, bytes) => { st.putPhoto.run(id, mime, bytes); };
+export const leerAjuste = async (clave) => st.leerAjuste.get(clave)?.valor ?? null;
+export const guardarAjuste = async (clave, valor) => { st.guardarAjuste.run(clave, valor); };
+export const diasCerrados = async () => st.diasCerrados.all();
+export const cerrarDia = async (date, motivo) => { st.cerrarDia.run(date, motivo || ''); };
+export const abrirDia = async (date) => st.abrirDia.run(date).changes > 0;
+
 export const getPhoto = async (id) => {
   const row = st.getPhoto.get(id);
   return row ? { mime: row.mime, bytes: Buffer.from(row.bytes) } : null;

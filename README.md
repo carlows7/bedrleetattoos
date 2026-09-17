@@ -247,7 +247,37 @@ git add . && git commit -m "lo que cambiaste" && git push
 
 Render vuelve a publicar solo, en un par de minutos.
 
-## 6. Archivos del proyecto
+## 6. Panel del estudio
+
+Dirección: **https://bedrleetattoos.onrender.com/admin.html**
+(en tu computadora: http://localhost:3000/admin.html)
+
+Desde ahí puedes, sin tocar código:
+
+- **Ver tus próximas citas** con nombre, teléfono (toca y se abre el WhatsApp),
+  estilo, zona, tamaño, la idea que escribieron y su foto de referencia.
+- **Cambiar tu horario**: hora de apertura y cierre, cuánto dura cada cita,
+  con cuánta anticipación se puede agendar y qué días de la semana no abres.
+- **Cerrar días sueltos** (vacaciones, feriados) y volver a abrirlos.
+
+Todo se aplica en la página al instante.
+
+### La contraseña
+
+Vive en la variable **`ADMIN_PASSWORD`**, que se pone en el panel de Render:
+*Environment* → *Add Environment Variable*. Mientras esa variable no exista,
+el panel no deja entrar a nadie.
+
+Para cambiarla, cambias esa variable en Render. No está escrita en el código
+ni se sube a GitHub.
+
+Detalles de seguridad ya incluidos:
+
+- Las citas de tus clientes solo se ven con la contraseña puesta.
+- Tras 5 intentos fallidos, esa persona queda bloqueada 15 minutos.
+- La sesión del panel dura 12 horas y luego pide la contraseña de nuevo.
+
+## 7. Archivos del proyecto
 
 ```
 config.js      ← lo que vas a cambiar (nombre, WhatsApp, dirección, redes, horarios)
@@ -261,6 +291,9 @@ public/
   index.html   ← estructura de la página
   styles.css   ← diseño (azules y blancos)
   app.js       ← calendario, formulario y mensajes de WhatsApp
+  admin.html   ← panel del estudio
+  admin.js     ← su funcionamiento
+  admin.css    ← su diseño
   img/         ← imagen de portada y patrón del fondo
 data/
   citas.db     ← las citas cuando corre en tu computadora (se crea solo)
@@ -269,7 +302,7 @@ extras/        ← el catálogo que se quitó, guardado por si vuelve
 
 ---
 
-## 7. Pendientes que dependen de ti
+## 8. Pendientes que dependen de ti
 
 - [x] Nombre del estudio: **bedrlee_tattoos**
 - [x] WhatsApp: **+503 7484 4432** (queda como `50374844432`)

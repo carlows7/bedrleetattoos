@@ -11,4 +11,5 @@ const impl = enLaNube
 export const {
   motor, takenTimes, takenInRange, createAppointment,
   findByCode, cancelByCode, upcoming, putPhoto, getPhoto,
+  leerAjuste, guardarAjuste, diasCerrados, cerrarDia, abrirDia,
 } = impl;

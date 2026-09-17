@@ -2,13 +2,14 @@ import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { extname, join, normalize, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { randomBytes } from 'node:crypto';
+import { randomBytes, createHmac, timingSafeEqual } from 'node:crypto';
 import { networkInterfaces } from 'node:os';
 
 import { config } from './config.js';
 import {
   motor, takenTimes, takenInRange, createAppointment,
   findByCode, cancelByCode, upcoming, putPhoto, getPhoto,
+  leerAjuste, guardarAjuste, diasCerrados, cerrarDia, abrirDia,
 } from './db.js';
 
 const root = dirname(fileURLToPath(import.meta.url));
@@ -55,9 +56,21 @@ const fmtHora = new Intl.DateTimeFormat('en-GB', {
 const todayISO = () => fmtFecha.format(new Date());   // YYYY-MM-DD
 const nowHM = () => fmtHora.format(new Date());       // HH:MM
 
+/* El horario vive en la base de datos para que el estudio pueda cambiarlo
+   desde su panel; si aún no se ha tocado, se usa el de config.js. */
+let horario = { ...config.schedule };
+let cerrados = new Map();          // fecha → motivo
+
+async function cargarAjustes() {
+  const guardado = await leerAjuste('horario');
+  horario = guardado ? { ...config.schedule, ...JSON.parse(guardado) } : { ...config.schedule };
+  cerrados = new Map((await diasCerrados()).map((d) => [d.date, d.motivo || '']));
+}
+
 /** Todos los bloques de un día según la configuración. */
 function slotsForDate(dateStr) {
-  const { openHour, closeHour, slotMinutes, closedWeekdays } = config.schedule;
+  if (cerrados.has(dateStr)) return [];
+  const { openHour, closeHour, slotMinutes, closedWeekdays } = horario;
   const [y, m, d] = dateStr.split('-').map(Number);
   const day = new Date(y, m - 1, d);
   if (closedWeekdays.includes(day.getDay())) return [];
@@ -82,9 +95,13 @@ function dateIsBookable(dateStr) {
   const today = todayISO();
   if (dateStr < today) return 'Esa fecha ya pasó.';
   const limit = new Date();
-  limit.setDate(limit.getDate() + config.schedule.maxDaysAhead);
+  limit.setDate(limit.getDate() + horario.maxDaysAhead);
   if (dateStr > fmtFecha.format(limit))
-    return `Solo se puede agendar con ${config.schedule.maxDaysAhead} días de anticipación.`;
+    return `Solo se puede agendar con ${horario.maxDaysAhead} días de anticipación.`;
+  if (cerrados.has(dateStr)) {
+    const motivo = cerrados.get(dateStr);
+    return motivo ? `Ese día el estudio está cerrado: ${motivo}.` : 'Ese día el estudio está cerrado.';
+  }
   if (slotsForDate(dateStr).length === 0) return 'Ese día el estudio está cerrado.';
   return null;
 }
@@ -134,6 +151,64 @@ async function savePhoto(dataUrl) {
 
 const newCode = () => randomBytes(3).toString('hex').toUpperCase();
 
+/* ── Acceso del panel ────────────────────────────────────────
+   La contraseña vive en la variable ADMIN_PASSWORD (se pone en el
+   panel de Render). Si no existe, el panel queda desactivado.
+   Al entrar se entrega un pase firmado que dura 12 horas. */
+const CLAVE = process.env.ADMIN_PASSWORD || '';
+const SECRETO = process.env.ADMIN_SECRET || CLAVE + '::bedrlee';
+const DURACION = 12 * 60 * 60 * 1000;
+
+const firmar = (dato) => createHmac('sha256', SECRETO).update(dato).digest('hex');
+
+function crearPase() {
+  const vence = String(Date.now() + DURACION);
+  return `${vence}.${firmar(vence)}`;
+}
+
+function paseValido(pase) {
+  if (!CLAVE || typeof pase !== 'string') return false;
+  const [vence, firma] = pase.split('.');
+  if (!vence || !firma || Number(vence) < Date.now()) return false;
+  const esperada = Buffer.from(firmar(vence));
+  const recibida = Buffer.from(firma);
+  return esperada.length === recibida.length && timingSafeEqual(esperada, recibida);
+}
+
+/** Compara contraseñas sin delatar cuántas letras coinciden. */
+function claveCorrecta(intento) {
+  if (!CLAVE || typeof intento !== 'string') return false;
+  const a = Buffer.from(firmar('clave:' + CLAVE));
+  const b = Buffer.from(firmar('clave:' + intento));
+  return timingSafeEqual(a, b);
+}
+
+const pasePeticion = (req) => (req.headers.authorization || '').replace(/^Bearer /, '');
+
+/* Freno para que nadie pueda probar contraseñas a lo bruto:
+   5 intentos fallidos por dirección, y 15 minutos de espera. */
+const intentos = new Map();
+const TOPE = 5;
+const ESPERA = 15 * 60 * 1000;
+
+function quienEs(req) {
+  const reenviado = (req.headers['x-forwarded-for'] || '').split(',')[0].trim();
+  return reenviado || req.socket.remoteAddress || 'desconocido';
+}
+
+function bloqueado(ip) {
+  const r = intentos.get(ip);
+  if (!r) return 0;
+  if (Date.now() - r.desde > ESPERA) { intentos.delete(ip); return 0; }
+  return r.fallos >= TOPE ? Math.ceil((ESPERA - (Date.now() - r.desde)) / 60000) : 0;
+}
+
+function apuntarFallo(ip) {
+  const r = intentos.get(ip);
+  if (!r || Date.now() - r.desde > ESPERA) intentos.set(ip, { fallos: 1, desde: Date.now() });
+  else r.fallos += 1;
+}
+
 // ── Rutas ──────────────────────────────────────────────────────
 async function api(req, res, url) {
   const path = url.pathname;
@@ -145,8 +220,9 @@ async function api(req, res, url) {
     return json(res, 200, {
       studioName, tagline, intro, heroImage, whatsappNumber, phoneDisplay, address, city,
       mapsQuery, instagram, facebook, facebookUrl, hoursText,
-      maxDaysAhead: schedule.maxDaysAhead,
-      closedWeekdays: schedule.closedWeekdays,
+      maxDaysAhead: horario.maxDaysAhead,
+      closedWeekdays: horario.closedWeekdays,
+      hoursText: config.hoursText,
       today: todayISO(),
       styles,
     });
@@ -271,9 +347,98 @@ async function api(req, res, url) {
     return json(res, 200, { ok: true });
   }
 
-  // Agenda del tatuador
-  if (req.method === 'GET' && path === '/api/admin/appointments') {
-    return json(res, 200, { appointments: await upcoming(todayISO()) });
+  /* ── Panel del estudio (requiere contraseña) ─────────────── */
+
+  if (req.method === 'POST' && path === '/api/admin/login') {
+    if (!CLAVE) {
+      return json(res, 503, {
+        error: 'El panel todavía no tiene contraseña. Se define en la variable ADMIN_PASSWORD.',
+      });
+    }
+    const ip = quienEs(req);
+    const minutos = bloqueado(ip);
+    if (minutos) {
+      return json(res, 429, {
+        error: `Demasiados intentos. Espera ${minutos} minuto(s) y vuelve a probar.`,
+      });
+    }
+
+    let clave = '';
+    try { clave = JSON.parse((await readBody(req, 2048)).toString()).password; }
+    catch { return json(res, 400, { error: 'No pudimos leer la contraseña.' }); }
+
+    if (!claveCorrecta(clave)) {
+      apuntarFallo(ip);
+      return json(res, 401, { error: 'Contraseña incorrecta.' });
+    }
+    intentos.delete(ip);
+    return json(res, 200, { ok: true, pase: crearPase() });
+  }
+
+  // De aquí en adelante, solo con el pase del panel
+  if (path.startsWith('/api/admin/')) {
+    if (!paseValido(pasePeticion(req))) {
+      return json(res, 401, { error: 'Necesitas entrar al panel de nuevo.' });
+    }
+
+    // Citas próximas del estudio
+    if (req.method === 'GET' && path === '/api/admin/appointments') {
+      const citas = await upcoming(todayISO());
+      return json(res, 200, {
+        appointments: citas.map((c) => ({ ...c, photoUrl: c.photo ? `/uploads/${c.photo}` : null })),
+      });
+    }
+
+    // Horario y días cerrados
+    if (req.method === 'GET' && path === '/api/admin/ajustes') {
+      return json(res, 200, { horario, cerrados: await diasCerrados(), hoy: todayISO() });
+    }
+
+    if (req.method === 'PUT' && path === '/api/admin/horario') {
+      let h;
+      try { h = JSON.parse((await readBody(req, 4096)).toString()); }
+      catch { return json(res, 400, { error: 'No pudimos leer el horario.' }); }
+
+      const abre = Number(h.openHour), cierra = Number(h.closeHour);
+      const bloque = Number(h.slotMinutes), dias = Number(h.maxDaysAhead);
+      const cerradosSemana = Array.isArray(h.closedWeekdays)
+        ? [...new Set(h.closedWeekdays.map(Number).filter((d) => d >= 0 && d <= 6))] : [];
+
+      if (!(abre >= 0 && abre <= 23)) return json(res, 400, { error: 'La hora de apertura no es válida.' });
+      if (!(cierra > abre && cierra <= 24)) return json(res, 400, { error: 'La hora de cierre debe ser mayor que la de apertura.' });
+      if (![30, 45, 60, 90, 120].includes(bloque)) return json(res, 400, { error: 'La duración de cada cita no es válida.' });
+      if (!(dias >= 1 && dias <= 365)) return json(res, 400, { error: 'Los días de anticipación deben ir de 1 a 365.' });
+      if (cerradosSemana.length === 7) return json(res, 400, { error: 'No puedes cerrar los siete días de la semana.' });
+
+      const nuevo = { openHour: abre, closeHour: cierra, slotMinutes: bloque,
+        closedWeekdays: cerradosSemana, maxDaysAhead: dias };
+      await guardarAjuste('horario', JSON.stringify(nuevo));
+      await cargarAjustes();
+      return json(res, 200, { ok: true, horario });
+    }
+
+    // Cerrar o reabrir un día concreto
+    if (req.method === 'POST' && path === '/api/admin/dias-cerrados') {
+      let d;
+      try { d = JSON.parse((await readBody(req, 2048)).toString()); }
+      catch { return json(res, 400, { error: 'No pudimos leer la fecha.' }); }
+      const fecha = clean(d.date, 10);
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha)) return json(res, 400, { error: 'Fecha inválida.' });
+
+      const ocupadas = await takenTimes(fecha);
+      await cerrarDia(fecha, clean(d.motivo, 80));
+      await cargarAjustes();
+      return json(res, 200, { ok: true, citasEseDia: ocupadas.length });
+    }
+
+    if (req.method === 'DELETE' && path.startsWith('/api/admin/dias-cerrados/')) {
+      const fecha = path.slice('/api/admin/dias-cerrados/'.length);
+      const habia = await abrirDia(fecha);
+      await cargarAjustes();
+      return json(res, habia ? 200 : 404, habia ? { ok: true } : { error: 'Ese día no estaba cerrado.' });
+    }
+
+    return json(res, 404, { error: 'Ruta del panel no encontrada.' });
   }
 
   return json(res, 404, { error: 'Ruta no encontrada.' });
@@ -331,6 +496,8 @@ const server = createServer(async (req, res) => {
     if (!res.headersSent) json(res, 500, { error: 'Error interno del servidor.' });
   }
 });
+
+await cargarAjustes();
 
 server.listen(config.port, () => {
   const redes = Object.values(networkInterfaces()).flat()

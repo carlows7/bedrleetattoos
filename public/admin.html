@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Panel · bedrlee_tattoos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,500;0,600;1,400;1,500;1,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="admin.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%231a6dff'/><g fill='none' stroke='white' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'><path d='M68 30 L42 56'/><path d='M42 56 l-10 16 16-10'/></g></svg>">
+</head>
+<body class="admin">
+
+<div class="bg-canvas" aria-hidden="true">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="grid-lines"></div>
+</div>
+
+<!-- Entrar -->
+<section class="login" id="login">
+  <form class="card login-card" id="loginForm">
+    <h1>Panel del estudio</h1>
+    <p class="muted">Solo para el tatuador. Escribe tu contraseña para entrar.</p>
+    <label>Contraseña
+      <input type="password" name="password" autocomplete="current-password" required>
+    </label>
+    <button class="btn btn-primary btn-block" type="submit"><span>Entrar</span></button>
+    <p class="form-msg err" id="loginMsg" role="status" aria-live="polite"></p>
+  </form>
+</section>
+
+<!-- Panel -->
+<main class="panel" id="panel" hidden>
+  <header class="panel-head">
+    <div>
+      <h1>Panel del estudio</h1>
+      <p class="muted" id="resumen">—</p>
+    </div>
+    <div class="panel-acciones">
+      <a class="btn btn-outline btn-sm" href="/" target="_blank" rel="noopener"><span>Ver la página</span></a>
+      <button class="btn btn-outline btn-sm" type="button" id="salir"><span>Salir</span></button>
+    </div>
+  </header>
+
+  <!-- Citas -->
+  <section class="card">
+    <h2>Próximas citas</h2>
+    <div id="citas"><p class="muted">Cargando…</p></div>
+  </section>
+
+  <!-- Horario -->
+  <section class="card">
+    <h2>Horario de atención</h2>
+    <p class="muted">Cambia aquí tus horas y los días que no abres. Se aplica de inmediato en la página.</p>
+    <form id="horarioForm">
+      <div class="grid-2">
+        <label>Abre a las
+          <select name="openHour"></select>
+        </label>
+        <label>Última cita antes de las
+          <select name="closeHour"></select>
+        </label>
+      </div>
+      <div class="grid-2">
+        <label>Duración de cada cita
+          <select name="slotMinutes">
+            <option value="30">30 minutos</option>
+            <option value="45">45 minutos</option>
+            <option value="60">1 hora</option>
+            <option value="90">1 hora y media</option>
+            <option value="120">2 horas</option>
+          </select>
+        </label>
+        <label>Se puede agendar hasta
+          <select name="maxDaysAhead">
+            <option value="15">15 días antes</option>
+            <option value="30">1 mes antes</option>
+            <option value="60">2 meses antes</option>
+            <option value="90">3 meses antes</option>
+            <option value="180">6 meses antes</option>
+          </select>
+        </label>
+      </div>
+      <fieldset class="dias">
+        <legend>Días que NO abres</legend>
+        <div class="dias-lista" id="diasSemana"></div>
+      </fieldset>
+      <button class="btn btn-primary" type="submit"><span>Guardar horario</span></button>
+      <p class="form-msg" id="horarioMsg" role="status" aria-live="polite"></p>
+    </form>
+  </section>
+
+  <!-- Días cerrados -->
+  <section class="card">
+    <h2>Días cerrados</h2>
+    <p class="muted">Para vacaciones, feriados o cualquier día suelto que no vayas a abrir.</p>
+    <form id="cerrarForm" class="cerrar-form">
+      <label>Fecha
+        <input type="date" name="date" required>
+      </label>
+      <label>Motivo (opcional)
+        <input type="text" name="motivo" placeholder="Vacaciones, feriado…" maxlength="80">
+      </label>
+      <button class="btn btn-primary" type="submit"><span>Cerrar ese día</span></button>
+    </form>
+    <p class="form-msg" id="cerrarMsg" role="status" aria-live="polite"></p>
+    <div id="listaCerrados"><p class="muted">Cargando…</p></div>
+  </section>
+</main>
+
+<script src="admin.js"></script>
+</body>
+</html>
