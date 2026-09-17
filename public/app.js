@@ -501,18 +501,29 @@ async function abrirCancelacion() {
 
   const folios = leerFolios();
   const citas = [];
+  let sinConexion = false;
+
   for (const code of folios) {
     try {
       const a = await api('/api/appointments?code=' + encodeURIComponent(code));
+      // Solo se olvida una cita que ya está cancelada o cuyo día pasó
       if (a.status === 'cancelada' || a.date < CFG.today) olvidarFolio(code);
       else citas.push(a);
-    } catch {
-      olvidarFolio(code);   // el folio ya no existe en el servidor
+    } catch (err) {
+      // 404 = esa cita ya no existe en el servidor, se puede olvidar.
+      // Cualquier otro fallo (conexión, servidor despertando) NO borra nada:
+      // la cita sigue guardada y se vuelve a intentar más tarde.
+      if (err.status === 404) olvidarFolio(code);
+      else sinConexion = true;
     }
   }
 
-  if (!citas.length) return pantallaSinCitas();
-  pantallaConfirmar(citas);
+  if (citas.length) return pantallaConfirmar(citas);
+  if (sinConexion) {
+    return pantallaSinCitas('No pudimos comprobar tus citas en este momento. ' +
+      'Revisa tu conexión y vuelve a intentar: tu cita sigue guardada.');
+  }
+  pantallaSinCitas();
 }
 
 function pantallaSinCitas(aviso) {
