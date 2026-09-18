@@ -22,7 +22,7 @@ export const config = {
   phoneDisplay: '+503 7484 4432',
 
   // Dirección tal como se lee en la página
-  address: 'Bedrlee Estudio · San Isidro',
+  address: 'BedrLee Ubication · San Isidro',
   city: 'Izalco, Sonsonate',
 
   // Lo que abre el mapa: coordenadas exactas del estudio
